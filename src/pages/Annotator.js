@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Annotation from 'react-image-annotation';
 import axios from 'axios';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import UploadImages from './UploadImages'; // Ensure you have this import
 
 const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview, tags, setTags }) => {
