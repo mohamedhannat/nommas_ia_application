@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import Annotation from 'react-image-annotation';
+// import Annotation from 'react-image-annotation';
 import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
 import UploadImages from './UploadImages'; // Ensure you have this import
@@ -379,7 +379,7 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
                 </button>
               </div>
               <div className="w-full md:w-[600px] m-auto cursor-crosshair">
-                <Annotation
+                {/* <Annotation
                   src={selectedImage}
                   alt="Annotate image"
                   annotations={annotations.filter((anno) => anno.data.imageId === selectedImage)}
@@ -394,7 +394,7 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
                   renderHighlight={renderHighlight}
                   renderContent={renderContent}
                   renderEditor={renderEditor}
-                />
+                /> */}
               </div>
               <div className="flex items-center justify-between mt-4">
   <div className="flex items-center">
