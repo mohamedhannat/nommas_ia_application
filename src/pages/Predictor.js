@@ -27,6 +27,8 @@ const Predictor = () => {
       reader.onload = (e) => {
         setImage(e.target.result);
         setImageData(event.target.files[0]);
+        setPredictions([]);  // Clear previous predictions
+        setMessage('');  // Clear previous message
       };
       reader.readAsDataURL(event.target.files[0]);
     }
@@ -76,20 +78,28 @@ const Predictor = () => {
     const img = new Image();
     img.src = image;
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
+      const maxWidth = 600;
+      const maxHeight = 600;
+      let ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+      canvas.width = img.width * ratio;
+      canvas.height = img.height * ratio;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       predictions.forEach(pred => {
         ctx.beginPath();
-        ctx.rect(pred.x1, pred.y1, pred.x2 - pred.x1, pred.y2 - pred.y1);
+        ctx.rect(
+          pred.x1 * ratio,
+          pred.y1 * ratio,
+          (pred.x2 - pred.x1) * ratio,
+          (pred.y2 - pred.y1) * ratio
+        );
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'red';
         ctx.fillStyle = 'red';
         ctx.stroke();
         ctx.fillText(
           `${pred.class} (${(pred.confidence * 100).toFixed(2)}%)`,
-          pred.x1,
-          pred.y1 > 10 ? pred.y1 - 5 : 10
+          pred.x1 * ratio,
+          pred.y1 * ratio > 10 ? pred.y1 * ratio - 5 : 10
         );
       });
     };
@@ -102,40 +112,41 @@ const Predictor = () => {
   }, [predictions]);
 
   return (
-    <div className="container p-4 mx-auto predictor">
-      <h2 className="mb-4 text-2xl font-bold">Model Prediction</h2>
-      <div className="mb-4">
-        <label htmlFor="model" className="block mb-2 font-bold text-gray-700">Select Model:</label>
-        <select id="model" value={selectedModel} onChange={handleModelChange} className="block w-full p-2 mt-1 border border-gray-300 rounded">
+    <div className="container p-6 mx-auto bg-white rounded-lg shadow-md">
+      <h2 className="mb-6 text-3xl font-bold text-center text-gray-800">Model Prediction</h2>
+      <div className="mb-6">
+        <label htmlFor="model" className="block mb-2 text-lg font-semibold text-gray-700">Select Model:</label>
+        <select id="model" value={selectedModel} onChange={handleModelChange} className="block w-full p-3 mt-1 border border-gray-300 rounded-lg">
           <option value="">Select a model</option>
           {models.map((model, index) => (
             <option key={index} value={model}>{model}</option>
           ))}
         </select>
       </div>
-      <div className="mb-4">
-        <label htmlFor="image" className="block mb-2 font-bold text-gray-700">Upload Image:</label>
-        <input type="file" id="image" accept="image/*" onChange={handleImageChange} className="block w-full p-2 mt-1 border border-gray-300 rounded" />
+      <div className="mb-6">
+        <label htmlFor="image" className="block mb-2 text-lg font-semibold text-gray-700">Upload Image:</label>
+        <input type="file" id="image" accept="image/*" onChange={handleImageChange} className="block w-full p-3 mt-1 border border-gray-300 rounded-lg" />
       </div>
-      <div className="flex gap-4 mb-4">
-        <button onClick={handlePredict} className="px-4 py-2 text-white transition duration-300 bg-blue-500 rounded shadow-lg hover:bg-blue-600">Predict</button>
-        <button onClick={handleDownloadModel} className="px-4 py-2 text-white transition duration-300 bg-green-500 rounded shadow-lg hover:bg-green-600">Download Best Model</button>
+      <div className="flex justify-center gap-4 mb-6">
+        <button onClick={handlePredict} className="px-6 py-3 text-lg font-semibold text-white bg-blue-500 rounded-lg shadow-lg hover:bg-blue-600">Predict</button>
+      
       </div>
-      {isLoading && <p>Loading...</p>}
-      {message && <p>{message}</p>}
+      {isLoading && <p className="text-lg font-semibold text-center text-gray-700">Loading...</p>}
+      {message && <p className="text-lg font-semibold text-center text-gray-700">{message}</p>}
       {image && (
-        <div className="relative">
-          <img src={image} alt="Selected" className="h-auto max-w-full" />
-          <canvas ref={imageRef} className="absolute top-0 left-0" />
+        <div className="flex items-center justify-center mb-6">
+          <div className="relative">
+            <canvas ref={imageRef} className="max-w-full" />
+          </div>
         </div>
       )}
       {predictions.length > 0 && (
-        <div>
-          <h3 className="mt-4 text-xl font-bold">Predictions</h3>
-          <ul>
+        <div className="mt-6">
+          <h3 className="mb-4 text-xl font-bold text-gray-800">Predictions</h3>
+          <ul className="list-disc list-inside">
             {predictions.map((pred, index) => (
-              <li key={index} className="mt-2">
-                Class: {pred.class}, Confidence: {(pred.confidence * 100).toFixed(2)}%, BBox: ({pred.x1}, {pred.y1}, {pred.x2}, {pred.y2})
+              <li key={index} className="mt-2 text-lg">
+                <span className="font-semibold">Class:</span> {pred.class}, <span className="font-semibold">Confidence:</span> {(pred.confidence * 100).toFixed(2)}%)
               </li>
             ))}
           </ul>

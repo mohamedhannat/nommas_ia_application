@@ -15,8 +15,8 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
   const [valPercent, setValPercent] = useState(20);
   const [testPercent, setTestPercent] = useState(10);
   const [datasetFolder, setDatasetFolder] = useState("dataset");
-  const [epochs, setEpochs] = useState(100);
-  const [batchSize, setBatchSize] = useState(16);
+  const [epochs, setEpochs] = useState(50);
+  const [batchSize, setBatchSize] = useState(4);
   const [saveBestModelPath, setSaveBestModelPath] = useState("");
   const [activeTab, setActiveTab] = useState('loaderImage');
   const [showModal, setShowModal] = useState(false);
@@ -309,6 +309,35 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
     setActiveTab('annotator');
   };
 
+  const handlePercentChange = (e, type) => {
+    const value = parseInt(e.target.value);
+    if (type === 'train') {
+      setTrainPercent(value);
+      const remaining = 100 - value;
+      if (valPercent + testPercent > remaining) {
+        const diff = valPercent + testPercent - remaining;
+        setValPercent(valPercent - diff / 2);
+        setTestPercent(testPercent - diff / 2);
+      }
+    } else if (type === 'val') {
+      setValPercent(value);
+      const remaining = 100 - value;
+      if (trainPercent + testPercent > remaining) {
+        const diff = trainPercent + testPercent - remaining;
+        setTrainPercent(trainPercent - diff / 2);
+        setTestPercent(testPercent - diff / 2);
+      }
+    } else if (type === 'test') {
+      setTestPercent(value);
+      const remaining = 100 - value;
+      if (trainPercent + valPercent > remaining) {
+        const diff = trainPercent + valPercent - remaining;
+        setTrainPercent(trainPercent - diff / 2);
+        setValPercent(valPercent - diff / 2);
+      }
+    }
+  };
+  
   return (
     <div className="px-4">
       <div className="flex flex-col items-center">
@@ -405,95 +434,114 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
                   renderEditor={renderEditor}
                 />
               </div>
-              <div className="flex items-center justify-between mt-4">
-                <div className="flex items-center">
-                  <label className="block mr-2">
-                    Dataset Folder:
-                  </label>
-                  <input
-                    type="text"
-                    value={datasetFolder}
-                    onChange={(e) => setDatasetFolder(e.target.value)}
-                    className="p-1 border rounded"
-                  />
-                </div>
-                <button className={style.button} onClick={exportAnnotationsForYOLOv5} type="button">
-                  Save Annotations
-                </button>
-              </div>
+          
             </div>
           )}
 
           {activeTab === 'configTrain' && (
-            <div>
-              <p className="text-xl font-semibold text-center">Configure Training</p>
-              <div className="flex items-center justify-center gap-4 my-4">
-                <label className="block">
-                  Train (%):
-                  <input
-                    type="number"
-                    value={trainPercent}
-                    onChange={(e) => setTrainPercent(parseInt(e.target.value))}
-                    className="p-1 ml-2 border rounded"
-                    min="0"
-                    max="100"
-                  />
-                </label>
-                <label className="block">
-                  Validation (%):
-                  <input
-                    type="number"
-                    value={valPercent}
-                    onChange={(e) => setValPercent(parseInt(e.target.value))}
-                    className="p-1 ml-2 border rounded"
-                    min="0"
-                    max="100"
-                  />
-                </label>
-                <label className="block">
-                  Test (%):
-                  <input
-                    type="number"
-                    value={testPercent}
-                    onChange={(e) => setTestPercent(parseInt(e.target.value))}
-                    className="p-1 ml-2 border rounded"
-                    min="0"
-                    max="100"
-                  />
-                </label>
-                <label className="block">
-                  Epochs:
-                  <input
-                    type="number"
-                    value={epochs}
-                    onChange={(e) => setEpochs(parseInt(e.target.value))}
-                    className="p-1 ml-2 border rounded"
-                    min="1"
-                  />
-                </label>
-                <label className="block">
-                  Batch Size:
-                  <input
-                    type="number"
-                    value={batchSize}
-                    onChange={(e) => setBatchSize(parseInt(e.target.value))}
-                    className="p-1 ml-2 border rounded"
-                    min="1"
-                  />
-                </label>
-                <label className="block">
-                  Save Best Model Path:
-                  <input
-                    type="text"
-                    value={saveBestModelPath}
-                    onChange={(e) => setSaveBestModelPath(e.target.value)}
-                    className="p-1 ml-2 border rounded"
-                  />
-                </label>
-                <button className={style.button} onClick={() => setShowModal(true)} type="button">Start Training</button>
-              </div>
-            </div>
-          )}
+  <div className="p-6 bg-white rounded-lg shadow-md">
+    <p className="mb-6 text-2xl font-semibold text-center">Configure Training</p>
+    
+    <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center">
+        <label className="block mr-2 text-sm font-medium text-gray-700">
+          Dataset Folder:
+        </label>
+        <input
+          type="text"
+          value={datasetFolder}
+          onChange={(e) => setDatasetFolder(e.target.value)}
+          className="p-2 border rounded"
+        />
+      </div>
+      <button className={style.button} onClick={exportAnnotationsForYOLOv5} type="button">
+        Save Annotations
+      </button>
+    </div>
+
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-700">
+          Train (%):
+        </label>
+        <input
+          type="number"
+          value={trainPercent}
+          onChange={(e) => handlePercentChange(e, 'train')}
+          className="w-full p-2 border rounded"
+          min="0"
+          max="100"
+        />
+      </div>
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-700">
+          Validation (%):
+        </label>
+        <input
+          type="number"
+          value={valPercent}
+          onChange={(e) => handlePercentChange(e, 'val')}
+          className="w-full p-2 border rounded"
+          min="0"
+          max="100"
+        />
+      </div>
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-700">
+          Test (%):
+        </label>
+        <input
+          type="number"
+          value={testPercent}
+          onChange={(e) => handlePercentChange(e, 'test')}
+          className="w-full p-2 border rounded"
+          min="0"
+          max="100"
+        />
+      </div>
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-700">
+          Epochs:
+        </label>
+        <input
+          type="number"
+          value={epochs}
+          onChange={(e) => setEpochs(parseInt(e.target.value))}
+          className="w-full p-2 border rounded"
+          min="1"
+        />
+      </div>
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-700">
+          Batch Size:
+        </label>
+        <input
+          type="number"
+          value={batchSize}
+          onChange={(e) => setBatchSize(parseInt(e.target.value))}
+          className="w-full p-2 border rounded"
+          min="1"
+        />
+      </div>
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-700">
+          Save Best Model Path:
+        </label>
+        <input
+          type="text"
+          value={saveBestModelPath}
+          onChange={(e) => setSaveBestModelPath(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+    </div>
+
+    <div className="flex justify-center mt-6">
+      <button className={style.button} onClick={() => setShowModal(true)} type="button">Start Training</button>
+    </div>
+  </div>
+)}
+
 
           {activeTab === 'resultTrain' && (
             <div>
