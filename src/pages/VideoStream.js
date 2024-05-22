@@ -87,7 +87,7 @@ const VideoStream = () => {
         console.error("There was an error processing the frame!", error);
         console.error("Error details:", error.response ? error.response.data : error.message);
       });
-      
+    }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="mb-4 text-2xl font-bold">Video Stream</h1>
