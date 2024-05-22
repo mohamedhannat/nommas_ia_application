@@ -19,7 +19,8 @@ const sidebarLinks = {
   model: [
     { id: 'annotate', text: 'TrainModel', icon: <HiTicket />, action: 'train' },
     { id: 'dataset', text: 'TestModel', icon: <HiTicket />, action: 'test' },
-    { id: 'matching', text: 'Matching', icon: <HiTicket />, action: 'match' },
+    // { id: 'matching', text: 'Matching', icon: <HiTicket />, action: 'match' },
+    { id: 'stream', text: 'Stream', icon: <HiTicket />, action: 'stream' },  // Add this line for VideoStream
   ],
 };
 

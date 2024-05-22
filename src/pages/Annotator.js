@@ -1,6 +1,5 @@
-
-import React, { useEffect, useState, useRef } from 'react';
-// import Annotation from 'react-image-annotation';
+import React, { useState, useEffect, useRef } from 'react';
+import Annotation from 'react-image-annotation';
 import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
 import UploadImages from './UploadImages'; // Ensure you have this import
@@ -16,11 +15,21 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
   const [valPercent, setValPercent] = useState(20);
   const [testPercent, setTestPercent] = useState(10);
   const [datasetFolder, setDatasetFolder] = useState("dataset");
+  const [epochs, setEpochs] = useState(100);
+  const [batchSize, setBatchSize] = useState(16);
+  const [saveBestModelPath, setSaveBestModelPath] = useState("");
   const [activeTab, setActiveTab] = useState('loaderImage');
   const [showModal, setShowModal] = useState(false);
   const [isTraining, setIsTraining] = useState(false);
   const [trainingCompleted, setTrainingCompleted] = useState(false);
   const [showSaveContinueModal, setShowSaveContinueModal] = useState(false);
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://13.39.193.246:5000/list-train-images')
+      .then(response => setImages(response.data.images))
+      .catch(error => console.error('Error retrieving train images:', error));
+  }, []);
 
   const style = {
     button: "text-white bg-blue-500 py-2 px-4 rounded shadow-lg transition duration-300 hover:bg-blue-600",
@@ -259,7 +268,7 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
     }));
 
     try {
-      const response = await axios.post('http://localhost:5000/save-annotations', {
+      const response = await axios.post('http://13.39.193.246:5000/save-annotations', {
         annotations: yolov5Annotations,
         datasetFolder,
         trainPercent,
@@ -277,7 +286,7 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
   const startTraining = () => {
     setIsTraining(true);
     setTrainingCompleted(false);
-    axios.get(`http://localhost:5000/start-training?dataset_folder=${datasetFolder}`)
+    axios.get(`http://13.39.193.246:5000/start-training?dataset_folder=${datasetFolder}&epochs=${epochs}&batch_size=${batchSize}&save_best_model_path=${saveBestModelPath}`)
       .then(response => {
         console.log('Training started');
         setTimeout(() => {
@@ -379,7 +388,7 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
                 </button>
               </div>
               <div className="w-full md:w-[600px] m-auto cursor-crosshair">
-                {/* <Annotation
+                <Annotation
                   src={selectedImage}
                   alt="Annotate image"
                   annotations={annotations.filter((anno) => anno.data.imageId === selectedImage)}
@@ -394,24 +403,24 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
                   renderHighlight={renderHighlight}
                   renderContent={renderContent}
                   renderEditor={renderEditor}
-                /> */}
+                />
               </div>
               <div className="flex items-center justify-between mt-4">
-  <div className="flex items-center">
-    <label className="block mr-2">
-      Dataset Folder:
-    </label>
-    <input
-      type="text"
-      value={datasetFolder}
-      onChange={(e) => setDatasetFolder(e.target.value)}
-      className="p-1 border rounded"
-    />
-  </div>
-  <button className={style.button} onClick={exportAnnotationsForYOLOv5} type="button">
-    Save Annotations
-  </button>
-</div>
+                <div className="flex items-center">
+                  <label className="block mr-2">
+                    Dataset Folder:
+                  </label>
+                  <input
+                    type="text"
+                    value={datasetFolder}
+                    onChange={(e) => setDatasetFolder(e.target.value)}
+                    className="p-1 border rounded"
+                  />
+                </div>
+                <button className={style.button} onClick={exportAnnotationsForYOLOv5} type="button">
+                  Save Annotations
+                </button>
+              </div>
             </div>
           )}
 
@@ -452,7 +461,35 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
                     max="100"
                   />
                 </label>
-         
+                <label className="block">
+                  Epochs:
+                  <input
+                    type="number"
+                    value={epochs}
+                    onChange={(e) => setEpochs(parseInt(e.target.value))}
+                    className="p-1 ml-2 border rounded"
+                    min="1"
+                  />
+                </label>
+                <label className="block">
+                  Batch Size:
+                  <input
+                    type="number"
+                    value={batchSize}
+                    onChange={(e) => setBatchSize(parseInt(e.target.value))}
+                    className="p-1 ml-2 border rounded"
+                    min="1"
+                  />
+                </label>
+                <label className="block">
+                  Save Best Model Path:
+                  <input
+                    type="text"
+                    value={saveBestModelPath}
+                    onChange={(e) => setSaveBestModelPath(e.target.value)}
+                    className="p-1 ml-2 border rounded"
+                  />
+                </label>
                 <button className={style.button} onClick={() => setShowModal(true)} type="button">Start Training</button>
               </div>
             </div>
@@ -460,8 +497,17 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
 
           {activeTab === 'resultTrain' && (
             <div>
-              <p className="text-xl font-semibold text-center">Training Results</p>
-              {isTraining ? (
+            <div>
+      <h2 className="text-xl font-semibold text-center">Training Images</h2>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {images.map((image, index) => (
+          <div key={index} className="p-2 border">
+            <img src={`data:image/png;base64,${image.data}`} alt={image.name} className="w-full h-auto" />
+            <p className="mt-2 text-center">{image.name}</p>
+          </div>
+        ))}
+      </div>
+    </div>              {isTraining ? (
                 <div className="flex items-center justify-center gap-4 my-4">
                   <CircularProgress />
                   <p>Training in progress...</p>
@@ -529,5 +575,3 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
 };
 
 export default Annotator;
-
-

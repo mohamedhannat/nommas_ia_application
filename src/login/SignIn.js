@@ -19,8 +19,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const SignIn = ({ setIsAuthenticated }) => {
-    const [email, setEmail] = useState("mohamed.hannat@paintup.fr");
-    const [password, setPassword] = useState("Simohannatsam");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
