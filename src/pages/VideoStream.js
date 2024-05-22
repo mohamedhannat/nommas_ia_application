@@ -73,21 +73,19 @@ const VideoStream = () => {
 
     const imageData = canvas.toDataURL('image/jpeg');
 
-    axios.post(`${process.env.REACT_APP_BACKEND_URL}/process_frame`, {
-        image: imageData
-      })
-      .then((response) => {
-        if (response.data.success) {
-          setDetectionGeometry(response.data.detections);
-        } else {
-          setDetectionGeometry([]);
-        }
-      })
-      .catch((error) => {
-        console.error("There was an error processing the frame!", error);
-        console.error("Error details:", error.response ? error.response.data : error.message);
-      });
-    }
+    axios.post('https://13.39.193.246:5000/process_frame', {
+      image: imageData
+    }).then((response) => {
+      if (response.data.success) {
+        setDetectionGeometry(response.data.detections);
+      } else {
+        setDetectionGeometry([]);
+      }
+    }).catch((error) => {
+      console.error("There was an error processing the frame!", error);
+    });
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="mb-4 text-2xl font-bold">Video Stream</h1>
