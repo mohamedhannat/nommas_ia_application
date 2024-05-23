@@ -9,9 +9,9 @@ function createPeerConnection() {
         sdpSemantics: 'unified-plan'
     };
 
-    config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
-
-    pc = new RTCPeerConnection(config);
+    config.iceServers = [{urls: ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478', 'stun:stun.flashdance.cx:3478']}];
+    
+	  pc = new RTCPeerConnection(config);
 
     // register some listeners to help debugging
     pc.addEventListener('icegatheringstatechange', function() {

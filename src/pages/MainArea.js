@@ -5,6 +5,7 @@ import Detection from './Yolo_test';
 import VideoStream from './VideoStream';  // Import the VideoStream component
 import Predictor from './Predictor';
 import WebrtcVideoStream from './WebrtcVideoStream'
+import Webrtc from './Webrtc'
 
 function MainArea({ selectedMenu }) {
     const [imageFiles, setImageFiles] = useState([]);
@@ -37,7 +38,7 @@ function MainArea({ selectedMenu }) {
             case 'stream':
                 return <VideoStream />;  
 						case 'WebrtcStream':
-                return <WebrtcVideoStream />;
+                return <Webrtc />;
     
             default:
                 return <div>Welcome to Roboflow Clone</div>;
