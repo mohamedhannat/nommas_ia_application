@@ -73,7 +73,7 @@ const VideoStream = () => {
 
     const imageData = canvas.toDataURL('image/jpeg');
 
-    axios.post('https://13.39.193.246:5000/process_frame', {
+    axios.post('http://ec2-13-39-193-246.eu-west-3.compute.amazonaws.com:5000/process_frame', {
       image: imageData
     }).then((response) => {
       if (response.data.success) {
