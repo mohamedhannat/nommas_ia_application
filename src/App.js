@@ -21,6 +21,7 @@ const sidebarLinks = {
     { id: 'dataset', text: 'TestModel', icon: <HiTicket />, action: 'test' },
     // { id: 'matching', text: 'Matching', icon: <HiTicket />, action: 'match' },
     { id: 'stream', text: 'Stream', icon: <HiTicket />, action: 'stream' },  // Add this line for VideoStream
+    { id: 'WebrtcStream', text: 'WebRtcStream', icon: <HiTicket />, action: 'WebrtcStream' },  // Add this line for VideoStream
   ],
 };
 
