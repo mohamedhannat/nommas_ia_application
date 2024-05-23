@@ -9,7 +9,7 @@ function createPeerConnection() {
         sdpSemantics: 'unified-plan'
     };
 
-    //config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
+    config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
 
     pc = new RTCPeerConnection(config);
 
@@ -62,7 +62,7 @@ function negotiate() {
         codec = 'default'
 
         console.log(offer.sdp);
-        return fetch('http://0.0.0.0:8080/offer', {//http://localhost:8080
+        return fetch('http://ec2-13-37-238-204.eu-west-3.compute.amazonaws.com:8080/offer', {//http://localhost:8080
             body: JSON.stringify({
                 sdp: offer.sdp,
                 type: offer.type,
