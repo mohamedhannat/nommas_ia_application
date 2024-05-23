@@ -12,7 +12,7 @@ const Predictor = () => {
   const imageRef = useRef(null);
 
   useEffect(() => {
-    axios.get('http://13.39.193.246:5000/list-models')
+    axios.get('http://ec2-13-39-193-246.eu-west-3.compute.amazonaws.com:5000/list-models')
       .then(response => setModels(response.data.models))
       .catch(error => console.error('Error listing models:', error));
   }, []);
@@ -59,7 +59,7 @@ const Predictor = () => {
   };
 
   const handleDownloadModel = () => {
-    axios.get(`http://13.39.193.246:5000/download-best-model?model_path=${selectedModel}`, { responseType: 'blob' })
+    axios.get(`http://ec2-13-39-193-246.eu-west-3.compute.amazonaws.com:5000/download-best-model?model_path=${selectedModel}`, { responseType: 'blob' })
       .then(response => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');

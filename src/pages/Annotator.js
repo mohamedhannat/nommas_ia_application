@@ -286,7 +286,7 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
   const startTraining = () => {
     setIsTraining(true);
     setTrainingCompleted(false);
-    axios.get(`http://13.39.193.246:5000/start-training?dataset_folder=${datasetFolder}&epochs=${epochs}&batch_size=${batchSize}&save_best_model_path=${saveBestModelPath}`)
+    axios.get(`http://ec2-13-39-193-246.eu-west-3.compute.amazonaws.com:5000/start-training?dataset_folder=${datasetFolder}&epochs=${epochs}&batch_size=${batchSize}&save_best_model_path=${saveBestModelPath}`)
       .then(response => {
         console.log('Training started');
         setTimeout(() => {
