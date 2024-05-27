@@ -12,7 +12,7 @@ const Predictor = () => {
   const imageRef = useRef(null);
 
   useEffect(() => {
-    axios.get('http://13.39.193.246:5000/list-models')
+    axios.get('http://13.37.238.204:5001/list-models')
       .then(response => setModels(response.data.models))
       .catch(error => console.error('Error listing models:', error));
   }, []);
@@ -46,7 +46,7 @@ const Predictor = () => {
     formData.append('model', selectedModel);
     formData.append('image', imageData);
 
-    axios.post('http://13.39.193.246:5000/predict', formData)
+    axios.post('http://13.37.238.204:5001/predict', formData)
       .then(response => {
         setPredictions(response.data.detections);
         setMessage(response.data.message || '');
@@ -59,7 +59,7 @@ const Predictor = () => {
   };
 
   const handleDownloadModel = () => {
-    axios.get(`http://13.39.193.246:5000/download-best-model?model_path=${selectedModel}`, { responseType: 'blob' })
+    axios.get(`http://13.37.238.204:5001/download-best-model?model_path=${selectedModel}`, { responseType: 'blob' })
       .then(response => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');

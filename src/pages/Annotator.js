@@ -26,7 +26,7 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
   const [images, setImages] = useState([]);
 
   useEffect(() => {
-    axios.get('http://13.39.193.246:5000/list-train-images')
+    axios.get('http://13.37.238.204:5001/list-train-images')
       .then(response => setImages(response.data.images))
       .catch(error => console.error('Error retrieving train images:', error));
   }, []);
@@ -268,7 +268,7 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
     }));
 
     try {
-      const response = await axios.post('http://13.39.193.246:5000/save-annotations', {
+      const response = await axios.post('http://13.37.238.204:5001/save-annotations', {
         annotations: yolov5Annotations,
         datasetFolder,
         trainPercent,
@@ -286,7 +286,7 @@ const Annotator = ({ imageFiles, setImageFiles, imagesPreview, setImagesPreview,
   const startTraining = () => {
     setIsTraining(true);
     setTrainingCompleted(false);
-    axios.get(`http://13.39.193.246:5000/start-training?dataset_folder=${datasetFolder}&epochs=${epochs}&batch_size=${batchSize}&save_best_model_path=${saveBestModelPath}`)
+    axios.get(`http://13.37.238.204:5001/start-training?dataset_folder=${datasetFolder}&epochs=${epochs}&batch_size=${batchSize}&save_best_model_path=${saveBestModelPath}`)
       .then(response => {
         console.log('Training started');
         setTimeout(() => {

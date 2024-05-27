@@ -1,24 +1,23 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Annotator from "./Annotator";
-// import Matcher from './Matching_Sift_Knn';
 import Detection from './Yolo_test';
-import VideoStream from './VideoStream';  // Import the VideoStream component
+import VideoStream from './VideoStream';
 import Predictor from './Predictor';
-import WebrtcVideoStream from './WebrtcVideoStream'
-import Webrtc from './Webrtc'
+import WebrtcVideoStream from './WebrtcVideoStream';
+import Webrtc from './Webrtc';
+import Config from './Config';
+import Workspace from './workspace';
+import Result from './Result';
 
 function MainArea({ selectedMenu }) {
     const [imageFiles, setImageFiles] = useState([]);
     const [imagesPreview, setImagesPreview] = useState([]);
     const [tags, setTags] = useState([]);
-    const [currentComponent, setCurrentComponent] = useState(null);
-    useEffect(() => {
-        setCurrentComponent(renderContent());
-    }, [selectedMenu]);
+    const [models, setModels] = useState([]);
+    const [selectedModelIndex, setSelectedModelIndex] = useState(null);
 
     const renderContent = () => {
         switch (selectedMenu) {
-     
             case 'train':
                 return <Annotator 
                          imageFiles={imageFiles} 
@@ -27,27 +26,28 @@ function MainArea({ selectedMenu }) {
                          setImagesPreview={setImagesPreview}
                          tags={tags}
                          setTags={setTags} />;
-            // case 'match':
-            //     return <Matcher/>;
             case 'home':
-                return <div>Welcome to Nossam App</div>;
+                return selectedModelIndex === null ? (
+                    <Workspace models={models} setSelectedModelIndex={setSelectedModelIndex} />
+                ) : (
+                    <Result model={models[selectedModelIndex]} setSelectedModelIndex={setSelectedModelIndex} />
+                );
             case 'settings':
-                return <div>Settings Component</div>;
+                return <Config models={models} setModels={setModels} />;
             case 'test':
-                return <Predictor/>;
+                return <Predictor />;
             case 'stream':
-                return <VideoStream />;  
-						case 'WebrtcStream':
+                return <VideoStream />;
+            case 'WebrtcStream':
                 return <Webrtc />;
-    
             default:
                 return <div>Welcome to Roboflow Clone</div>;
         }
     };
 
     return (
-        <div className="flex items-center justify-center flex-grow p-8">
-            <div className="w-full max-w-5xl mx-auto mt-8">
+        <div className="flex-grow p-8">
+            <div className="w-full max-w-6xl mx-auto">
                 {renderContent()}
             </div>
         </div>

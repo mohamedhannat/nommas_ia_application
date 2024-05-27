@@ -56,7 +56,7 @@ const Navbar = ({ setIsAuthenticated, setSelectedLinks, sidebarLinks, setSelecte
                 onClick={() => handleMenuClick('settings')}
                 className="px-5 py-4 font-medium text-gray-500 capitalize rounded-sm hover:text-gray-900 hover:bg-gray-50"
               >
-                Settings
+                Configuration
               </button>
               <button
                 onClick={() => handleMenuClick('model')}

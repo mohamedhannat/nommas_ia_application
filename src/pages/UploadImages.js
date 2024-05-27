@@ -172,7 +172,7 @@ const renderImageGallery = () => (
      <div className="mb-6">
   <div className="flex items-center mb-4 space-x-2">
     <label htmlFor="projectName" className="text-sm font-medium text-gray-700 min-w-[100px]">
-      Project Name
+      Product Name
     </label>
     <input
       id="projectName"
